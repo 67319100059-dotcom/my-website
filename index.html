@@ -1,0 +1,1039 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>บทเรียนออนไลน์ — การทํางานเทคโนโลยีปญญาประดิษฐ (AI)</title>
+<style>
+:root{
+  --bg:#FFF8C6; /* light yellow */
+  --glass-bg: rgba(255,255,255,0.6);
+  --card-radius:16px;
+  --soft-shadow: 0 8px 20px rgba(20,20,60,0.08);
+  --accent-1: #6EC6FF; /* blue */
+  --accent-2: #FFD86E; /* yellow */
+  --accent-3: #FF92C2; /* pink */
+  --accent-4: #B9F6CA; /* green */
+  --text:#243141;
+  --muted:#556677aa;
+  font-family: "Noto Sans Thai", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color:var(--text);
+}
+
+/* Page layout */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background: linear-gradient(180deg,var(--bg) 0%, #FFF9D9 60%);
+  min-height:100vh;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:28px;
+}
+
+/* cloud decorations */
+.cloud{
+  position:fixed;
+  width:320px;
+  height:120px;
+  background: radial-gradient(closest-side, #fff 40%, rgba(255,255,255,0.6) 60%);
+  border-radius:60px;
+  filter: blur(6px);
+  opacity:0.9;
+  z-index:0;
+}
+.cloud.c1{left:8%; top:6%;}
+.cloud.c2{right:6%; top:12%; transform:scale(0.9);}
+
+/* Main container */
+.container{
+  width:100%;
+  max-width:1100px;
+  background:transparent;
+  z-index:2;
+}
+
+/* Card / Panel */
+.header {
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:18px;
+  border-radius:20px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.45));
+  backdrop-filter: blur(6px);
+  box-shadow: var(--soft-shadow);
+  margin-bottom:18px;
+}
+.logo{
+  width:86px;height:86px;border-radius:16px;
+  background:linear-gradient(135deg,#fff, #f0f6ff);
+  display:flex;align-items:center;justify-content:center;
+  font-size:34px;
+  box-shadow: 0 6px 14px rgba(100,120,160,0.06);
+}
+.title-block{flex:1}
+.title-block h1{margin:0;font-size:20px}
+.title-block p{margin:4px 0 0;color:var(--muted);font-size:13px}
+
+/* Layout: left nav and main content */
+.layout{
+  display:grid;
+  grid-template-columns:270px 1fr;
+  gap:18px;
+  align-items:start;
+}
+
+/* Sidebar */
+.sidebar{
+  position:relative;
+  padding:14px;
+  border-radius:16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.65), rgba(255,255,255,0.45));
+  box-shadow: var(--soft-shadow);
+  min-height:420px;
+}
+.user-card{
+  display:flex;gap:10px;align-items:center;margin-bottom:12px;
+}
+.avatar{
+  width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#fff,#f6fff7);
+  display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 6px 12px rgba(0,0,0,0.04);
+}
+.user-info small{display:block;color:var(--muted);font-size:12px}
+.nav{
+  display:flex;flex-direction:column;gap:8px;margin-top:8px;
+}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 12px;
+  border-radius:14px;
+  background:var(--glass-bg);
+  border:0;
+  cursor:pointer;
+  box-shadow: var(--soft-shadow);
+  transition: transform .16s ease, box-shadow .16s ease;
+  font-weight:600;
+  color:var(--text);
+  text-align:left;
+}
+.btn:disabled{opacity:0.45;cursor:not-allowed}
+.btn:hover:not(:disabled){ transform:translateY(-6px); box-shadow: 0 14px 30px rgba(20,20,60,0.12); }
+.btn.logout{background:linear-gradient(90deg,#FFDDDD,#FFECEC); color:#7a2b2b; margin-top:12px;}
+
+/* Main content */
+.main{
+  padding:16px;
+  border-radius:16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.75), rgba(255,255,255,0.6));
+  box-shadow: var(--soft-shadow);
+  min-height:420px;
+}
+
+/* Sections */
+.section{
+  display:none;
+  gap:12px;
+}
+.section.active{display:block}
+
+/* Card styles for content tabs */
+.card{
+  position:relative;
+  padding:16px;
+  border-radius:14px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.82), rgba(255,255,255,0.6));
+  box-shadow: 0 8px 18px rgba(10,20,40,0.04);
+  margin-bottom:12px;
+  overflow:hidden;
+}
+
+/* colorful panels for tabs */
+.tab-card.p1{background: linear-gradient(135deg,#E0F7FF, #C9EDFF);}
+.tab-card.p2{background: linear-gradient(135deg,#FFF4D1,#FFE6B5);}
+
+/* sheen effect on important cards */
+.card.important::before{
+  content:"";
+  position:absolute;
+  left:-60%;
+  top:0;
+  width:60%;
+  height:100%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.0), rgba(255,255,255,0.6), rgba(255,255,255,0.0));
+  transform:skewX(-20deg);
+  pointer-events:none;
+  filter: blur(12px);
+  animation: sheen 10s linear infinite;
+  opacity:0.9;
+}
+@keyframes sheen{
+  0%{ left:-60%; }
+  100%{ left:160%; }
+}
+
+/* question box */
+.question{
+  padding:12px;border-radius:12px;background:rgba(255,255,255,0.6);
+  display:flex;flex-direction:column;gap:8px;
+}
+.options{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.option{
+  padding:10px;border-radius:12px;background:linear-gradient(180deg,#fff,#fbfbfd);
+  border:1px solid rgba(30,40,60,0.04);
+  cursor:pointer;
+  transition:transform .12s ease, box-shadow .12s ease;
+  display:flex;gap:10px;align-items:center;
+}
+.option:hover{ transform:translateY(-6px); box-shadow: 0 12px 26px rgba(20,20,60,0.06); }
+.option input{display:none}
+.option.selected{outline:3px solid rgba(110,198,255,0.25)}
+
+/* timer */
+.timer{
+  display:flex;align-items:center;gap:8px;color:var(--muted);font-weight:700;
+}
+.progress{
+  height:8px;background:rgba(0,0,0,0.06);border-radius:8px;flex:1;overflow:hidden;
+}
+.progress > i{display:block;height:100%;background:linear-gradient(90deg,#6EC6FF,#4AA3FF);width:100%;transform-origin:left;transition:width .2s linear;}
+
+/* results */
+.results{
+  display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+}
+.score-bubble{
+  padding:18px;border-radius:14px;background:linear-gradient(135deg,#fff,#f7fffb);min-width:140px;text-align:center;
+  box-shadow: var(--soft-shadow);
+}
+
+/* quiz nav */
+.qnav{display:flex;gap:8px;align-items:center;margin-top:12px}
+.small{font-size:13px;color:var(--muted)}
+
+/* game board */
+.board{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
+}
+.card-game{
+  padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff,#fbfbff);display:flex;align-items:center;justify-content:center;
+  font-size:28px;cursor:pointer;box-shadow:0 8px 18px rgba(12,20,40,0.04);
+  transition:transform .12s ease, box-shadow .12s ease;
+  user-select:none;
+}
+.card-game:hover{transform:translateY(-6px);box-shadow:0 20px 36px rgba(10,20,40,0.08)}
+.card-game.matched{background:linear-gradient(135deg,#E6FFE9,#DFFFE2); cursor:default;}
+
+/* footer actions */
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.hint{font-size:13px;color:var(--muted)}
+
+/* responsive */
+@media (max-width:880px){
+  .layout{grid-template-columns:1fr; }
+  .sidebar{order:2}
+  .main{order:1}
+}
+</style>
+</head>
+<body>
+  <div class="cloud c1" aria-hidden="true"></div>
+  <div class="cloud c2" aria-hidden="true"></div>
+
+  <div class="container" role="main">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo" aria-hidden="true">📘</div>
+      <div class="title-block">
+        <h1>บทเรียนออนไลน์ — การทํางานเทคโนโลยีปญญาประดิษฐ (AI)</h1>
+        <p>ระดับชั้น: ระดับชั้นประกาศนียบัตรวิชาชีพชั้นสูง • วิชา: วิชาการประยุกต์ AI สำหรับงานธุรกิจ</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div id="greeting" style="text-align:right;font-size:14px;color:var(--muted)"></div>
+        <button id="logoutBtn" class="btn logout" title="ออกจากระบบ">🔓 ออกจากระบบ</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- Sidebar -->
+      <aside class="sidebar" aria-label="แถบนำทาง">
+        <!-- Login card (if not logged in) -->
+        <div id="loginCard" class="card important">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <h3 style="margin:0">เข้าสู่ระบบผู้เรียน</h3>
+              <small class="small">กรุณากรอกชื่อ–นามสกุล เพื่อเริ่มบทเรียน</small>
+            </div>
+            <div style="font-size:34px">👩‍💻</div>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:8px;flex-direction:column">
+            <input id="fullname" type="text" placeholder="ชื่อ–นามสกุล" style="padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)" />
+            <div style="display:flex;gap:8px">
+              <button id="enterBtn" class="btn" style="flex:1">🔑 เข้าสู่ระบบ</button>
+              <button id="guestBtn" class="btn" style="width:120px">👀 ตัวอย่าง</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- User info after login -->
+        <div id="userPanel" style="display:none">
+          <div class="user-card">
+            <div class="avatar" id="avatarEmoji">🧑‍🎓</div>
+            <div class="user-info">
+              <strong id="userName">นักเรียน</strong>
+              <small id="userLevel">ระดับชั้นประกาศนียบัตรวิชาชีพชั้นสูง</small>
+            </div>
+          </div>
+
+          <nav class="nav" aria-label="เมนูบทเรียน">
+            <button class="btn" id="navPre" title="แบบทดสอบก่อนเรียน">📝 แบบทดสอบก่อนเรียน</button>
+            <button class="btn" id="navContent" title="เนื้อหา" disabled>📚 เนื้อหา</button>
+            <button class="btn" id="navPost" title="แบบทดสอบหลังเรียน" disabled>✅ แบบทดสอบหลังเรียน</button>
+            <button class="btn" id="navGame" title="เกมโต้ตอบ" disabled>🎮 เกมโต้ตอบ</button>
+            <button class="btn" id="navCheck" title="ตรวจสอบคะแนน" disabled>📊 คะแนนและการพัฒนา</button>
+          </nav>
+        </div>
+
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">
+          <div>หัวข้อ: การทํางานเทคโนโลยีปญญาประดิษฐ (AI)</div>
+          <div style="margin-top:8px">วิชา: วิชาการประยุกต์ AI สำหรับงานธุรกิจ</div>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main">
+        <!-- Pre-test section -->
+        <section id="pretestSection" class="section active">
+          <div class="card important">
+            <h3 style="margin:0 0 6px 0">แบบทดสอบก่อนเรียน (ต้องทำก่อนเริ่มเนื้อหา)</h3>
+            <small class="small">แบบทดสอบ 10 ข้อ เลือกคำตอบเดียว | เวลา 20 วินาทีต่อข้อ | ทำทีละข้อ</small>
+          </div>
+
+          <div id="pretestContainer" class="card">
+            <div id="qbox" class="question">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                  <strong id="qtitle">คำถาม</strong>
+                  <div class="small" id="qcount">ข้อที่ 1 / 10</div>
+                </div>
+                <div class="timer">
+                  ⏱ <div id="timeLeft">20</div>s
+                  <div class="progress" style="width:160px"><i id="prog" style="width:100%"></i></div>
+                </div>
+              </div>
+
+              <div id="qtext" style="font-size:16px;margin-top:6px">กำลังโหลดคำถาม...</div>
+
+              <div class="options" id="options"></div>
+
+              <div class="qnav">
+                <div class="small hint">เลือกคำตอบแล้วกด "ถัดไป" หรือรอให้หมดเวลาเพื่อไปข้อถัดไป</div>
+                <div style="flex:1"></div>
+                <button id="nextQ" class="btn" disabled>➡️ ถัดไป</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Content section -->
+        <section id="contentSection" class="section">
+          <div class="tab-card p1 card important">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <h3 style="margin:0">แท็ปที่ 1 — เทคโนโลยีปัญญาประดิษฐกับธุรกิจ</h3>
+                <small class="small">เข้าใจบทบาทของ AI ในการปรับปรุงกระบวนการและการตัดสินใจทางธุรกิจ</small>
+              </div>
+              <div style="font-size:34px">🤖📈</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h4>เทคโนโลยีปัญญาประดิษฐกับธุรกิจ</h4>
+            <p>
+              เทคโนโลยีปัญญาประดิษฐ (AI) ช่วยให้ธุรกิจสามารถวิเคราะห์ข้อมูลจำนวนมาก อัตโนมัติการทำงานซ้ำซ้อน และปรับปรุงการตัดสินใจได้อย่างรวดเร็ว
+              ตัวอย่างเช่น การใช้โมเดลทำนายความต้องการลูกค้า (Demand Forecasting) การใช้แชทบอทในการบริการลูกค้า และระบบแนะนำสินค้า
+            </p>
+            <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+              <div class="card" style="flex:1;min-width:220px">
+                <div style="font-size:32px">🔍</div>
+                <strong>วิเคราะห์ข้อมูล</strong>
+                <div class="small">AI ช่วยสกัดข้อมูลเชิงลึกจากข้อมูลขนาดใหญ่</div>
+              </div>
+              <div class="card" style="flex:1;min-width:220px">
+                <div style="font-size:32px">🤖</div>
+                <strong>อัตโนมัติ</strong>
+                <div class="small">ลดงานซ้ำซ้อน เพิ่มประสิทธิภาพการทำงาน</div>
+              </div>
+              <div class="card" style="flex:1;min-width:220px">
+                <div style="font-size:32px">💡</div>
+                <strong>ตัดสินใจเร็วขึ้น</strong>
+                <div class="small">ให้ข้อมูลสนับสนุนการตัดสินใจเชิงกลยุทธ์</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-card p2 card important">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <h3 style="margin:0">แท็ปที่ 2 — ประยุกตใช้เทคโนโลยีปญญาประดิษฐ</h3>
+                <small class="small">วิธีนำ AI ไปใช้จริงในงานธุรกิจ</small>
+              </div>
+              <div style="font-size:34px">💼🧠</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h4>ประยุกตใช้เทคโนโลยีปญญาประดิษฐ</h4>
+            <p>
+              การประยุกต์ใช้ AI ควรเริ่มจากปัญหาเชิงธุรกิจที่ชัดเจน รวบรวมข้อมูลที่เหมาะสม และทดสอบโมเดลในสเกลเล็กก่อนขยายผล
+              ตัวอย่างเช่น ระบบแนะนำสินค้า (Recommendation), การประมวลผลภาษาธรรมชาติ (NLP) สำหรับแชทบอท, และตรวจจับการฉ้อโกง
+            </p>
+            <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+              <div class="card" style="flex:1;min-width:220px">
+                <div style="font-size:32px">🧾</div>
+                <strong>การประมวลผลคำพูด/ข้อความ</strong>
+                <div class="small">NLP ช่วยอ่านและตอบข้อความลูกค้าอัตโนมัติ</div>
+              </div>
+              <div class="card" style="flex:1;min-width:220px">
+                <div style="font-size:32px">📦</div>
+                <strong>การจัดการคลังสินค้า</strong>
+                <div class="small">ทำนายสินค้าและลดต้นทุนสต็อก</div>
+              </div>
+              <div class="card" style="flex:1;min-width:220px">
+                <div style="font-size:32px">🔐</div>
+                <strong>ความปลอดภัยและตรวจสอบ</strong>
+                <div class="small">ตรวจจับพฤติกรรมผิดปกติและการฉ้อโกง</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Post-test -->
+        <section id="posttestSection" class="section">
+          <div class="card important">
+            <h3 style="margin:0">แบบทดสอบ��ลังเรียน</h3>
+            <small class="small">แบบทดสอบ 10 ข้อ (ตัวเลือกสลับลำดับ) | เวลา 20 วินาทีต่อข้อ</small>
+          </div>
+
+          <div id="posttestContainer" class="card">
+            <div id="qbox2" class="question">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                  <strong id="qtitle2">คำถาม</strong>
+                  <div class="small" id="qcount2">ข้อที่ 1 / 10</div>
+                </div>
+                <div class="timer">
+                  ⏱ <div id="timeLeft2">20</div>s
+                  <div class="progress" style="width:160px"><i id="prog2" style="width:100%"></i></div>
+                </div>
+              </div>
+
+              <div id="qtext2" style="font-size:16px;margin-top:6px">เข้าสู่แบบทดสอบหลังเรียนเมื่อพร้อม</div>
+
+              <div class="options" id="options2"></div>
+
+              <div class="qnav">
+                <div class="small hint">เลือกคำตอบแล้วกด "ถัดไป" หรือรอให้หมดเวลา</div>
+                <div style="flex:1"></div>
+                <button id="nextQ2" class="btn" disabled>➡️ ถัดไป</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Game -->
+        <section id="gameSection" class="section">
+          <div class="card important">
+            <h3 style="margin:0">เกมโต้ตอบ — เกมจับคู่ (Memory)</h3>
+            <small class="small">พลิกการ์ดเพื่อจับคู่คำศัพท์กับอีโมจิที่เกี่ยวกับ AI</small>
+          </div>
+
+          <div class="card">
+            <div id="board" class="board" aria-live="polite"></div>
+            <div class="actions">
+              <button id="newGame" class="btn">🔁 เริ่มเกมใหม่</button>
+              <div class="hint">เทคนิค: จดจำตำแหน่งการ์ด แล้วจับคู่ให้ได้เร็วที่สุด</div>
+            </div>
+            <div style="margin-top:12px" class="small">คะแนนสูงสุด (session): <strong id="bestGame">0</strong></div>
+          </div>
+        </section>
+
+        <!-- Check / Results -->
+        <section id="checkSection" class="section">
+          <div class="card important">
+            <h3 style="margin:0">ตรวจสอบคะแนนและการพัฒนา</h3>
+            <small class="small">แสดงผลคะแนนก่อน-หลัง และประเมินระดับคุณภาพ</small>
+          </div>
+
+          <div class="card results">
+            <div class="score-bubble">
+              <div class="small">คะแนนก่อนเรียน</div>
+              <div style="font-size:24px" id="preScore">- / 10</div>
+            </div>
+            <div class="score-bubble">
+              <div class="small">คะแนนหลังเรียน</div>
+              <div style="font-size:24px" id="postScore">- / 10</div>
+            </div>
+            <div class="score-bubble">
+              <div class="small">พัฒนาการ</div>
+              <div style="font-size:20px" id="deltaScore">-</div>
+            </div>
+          </div>
+
+          <div class="card" id="qualityCard">
+            <h4>ผลการประเมินคุณภาพ</h4>
+            <p id="qualityText">ยังไม่มีข้อมูล</p>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+<script>
+/* Data and state */
+const APP = {
+  level: "ระดับชั้นประกาศนียบัตรวิชาชีพชั้นสูง",
+  subject: "วิชาการประยุกต์ AI สำหรับงานธุรกิจ",
+  lesson: "การทํางานเทคโนโลยีปญญาประดิษฐ (AI)",
+  tab1: "เทคโนโลยีปัญญาประดิษฐกับธุรกิจ",
+  tab2: "ประยุกตใช้เทคโนโลยีปญญาประดิษฐ",
+  userKey: "ai_lesson_user",
+  preKey: "ai_lesson_pre",
+  postKey: "ai_lesson_post",
+  bestGameKey: "ai_lesson_bestgame",
+};
+
+/* Example 10 pre/post questions about the topic */
+const QUESTIONS = [
+  {
+    q: "AI (ปัญญาประดิษฐ) มีบทบาทใดต่อธุรกิจมากที่สุด?",
+    choices: ["แทนที่พนักงานทุกตำแหน่ง", "ช่วยวิเคราะห์ข้อมูลเพื่อการตัดสินใจ", "ทำให้สินค้าราคาแพงขึ้น", "ลดความสำคัญของข้อมูล"],
+    ans: 1
+  },
+  {
+    q: "ตัวอย่างการประยุกต์ใช้ AI ในงานธุรกิจคือข้อใด?",
+    choices: ["ระบบแนะนำสินค้า (Recommendation)", "เขียนนโยบายภาษีอัตโนมัติ", "ซ่อมเครื่องจักรด้วยมนุษย์เท่านั้น", "ทำลายข้อมูลลูกค้า"],
+    ans: 0
+  },
+  {
+    q: "ข้อใดเป็นผลประโยชน์จากการใช้ AI ในองค์กร?",
+    choices: ["เพิ่มเวลาในการทำงานซ้ำซ้อน", "ลดประสิทธิภาพการตัดสินใจ", "อัตโนมัติการทำงานซ้ำซ้อนและเพิ่มความแม่นยำ", "ยกเลิกการวิเคราะห์ข้อมูล"],
+    ans: 2
+  },
+  {
+    q: "ข้อมูล (data) มีความสำคัญต่อ AI อย่างไร?",
+    choices: ["ไม่จำเป็น", "เป็นพื้นฐานสำหรับการฝึกโมเดล", "ใช้เพื่อเพิ่มค่าใช้จ่าย", "ใช้แทนโมเดลทั้งหมด"],
+    ans: 1
+  },
+  {
+    q: "NLP (การประมวลผลภาษาธรรมชาติ) ใช้ในงานธุรกิจเพื่ออะไร?",
+    choices: ["อ่านและตอบข้อความลูกค้าอัตโนมัติ", "ทำให้ข้อมูลหายไป", "เพิ่มความช้าในการบริการ", "ปิดกั้นลูกค้า"],
+    ans: 0
+  },
+  {
+    q: "การเริ่มต้นโครงการ AI ที่ดีควรเริ่มจากอะไร?",
+    choices: ["เริ่มสร้างโมเดลก่อนโดยไม่ดูปัญหา", "เลือกปัญหาทางธุรกิจที่ชัดเจนและข้อมูลที่เหมาะสม", "ซื้อฮาร์ดแวร์ก่อนเท่านั้น", "ไม่ต้องทดสอบอะไรเลย"],
+    ans: 1
+  },
+  {
+    q: "ระบบแชทบอทที่ทำงานดีต้องอาศัยอะไร?",
+    choices: ["ข้อมูลตัวอย่างการสนทนาและการฝึกโมเดล NLP", "เพียงภาพประกอบ", "แค่ใส่ emoji มากๆ", "ไม่มีข้อมูล"],
+    ans: 0
+  },
+  {
+    q: "AI สามารถช่วยลดค่าใช้จ่ายโดยตรงอย่างไร?",
+    choices: ["เพิ่มจำนวนพนักงาน", "อัตโนมัติงานซ้ำซ้อนและปรับปรุงกระบวนการ", "ปิดระบบทั้งหมด", "สร้างปัญหาใหม่"],
+    ans: 1
+  },
+  {
+    q: "การประเมินผลโครงการ AI ควรพิจารณาอะไรบ้าง?",
+    choices: ["ผลลัพธ์เชิงธุรกิจ, ความถูกต้องของโมเดล, และการใช้งานจริง", "แค่ความสวยงามของอินเทอร์เฟซ", "เพียงจำนวนโค้ด", "แค่การประชาสัมพันธ์"],
+    ans: 0
+  },
+  {
+    q: "ข้อควรระวังเมื่อใช้ AI ในธุรกิจคือข้อใด?",
+    choices: ["ไม่ต้องตรวจสอบผลลัพธ์", "ละเลยความเป็นส่วนตัวของข้อมูล", "พิจารณาความเป็นธรรมและความเป็นส่วนตัวของข้อมูล", "ใช้ข้อมูลจากที่ไม่เชื่อถือเสมอ"],
+    ans: 2
+  },
+];
+
+/* Shuffle helper */
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+/* UI elements */
+const loginCard = document.getElementById('loginCard');
+const userPanel = document.getElementById('userPanel');
+const fullnameInput = document.getElementById('fullname');
+const enterBtn = document.getElementById('enterBtn');
+const guestBtn = document.getElementById('guestBtn');
+const greeting = document.getElementById('greeting');
+const avatarEmoji = document.getElementById('avatarEmoji');
+const userNameEl = document.getElementById('userName');
+
+const navPre = document.getElementById('navPre');
+const navContent = document.getElementById('navContent');
+const navPost = document.getElementById('navPost');
+const navGame = document.getElementById('navGame');
+const navCheck = document.getElementById('navCheck');
+
+const sections = {
+  pre: document.getElementById('pretestSection'),
+  content: document.getElementById('contentSection'),
+  post: document.getElementById('posttestSection'),
+  game: document.getElementById('gameSection'),
+  check: document.getElementById('checkSection')
+};
+
+const logoutBtn = document.getElementById('logoutBtn');
+
+/* State for quizzes */
+let preState = { idx:0, answers: [], timer:null, timeLeft:20, scoring:0 };
+let postState = { idx:0, answers: [], timer:null, timeLeft:20, scoring:0 };
+
+/* Pre-render questions with fixed order; posttest will shuffle options */
+const preQuestions = QUESTIONS.map(q => ({...q}));
+const postQuestionsBase = QUESTIONS.map(q => ({...q}));
+
+/* Elements pretest */
+const qtitle = document.getElementById('qtitle');
+const qcount = document.getElementById('qcount');
+const qtext = document.getElementById('qtext');
+const options = document.getElementById('options');
+const timeLeftEl = document.getElementById('timeLeft');
+const prog = document.getElementById('prog');
+const nextQ = document.getElementById('nextQ');
+
+/* Elements posttest */
+const qtitle2 = document.getElementById('qtitle2');
+const qcount2 = document.getElementById('qcount2');
+const qtext2 = document.getElementById('qtext2');
+const options2 = document.getElementById('options2');
+const timeLeftEl2 = document.getElementById('timeLeft2');
+const prog2 = document.getElementById('prog2');
+const nextQ2 = document.getElementById('nextQ2');
+
+/* Check results elements */
+const preScoreEl = document.getElementById('preScore');
+const postScoreEl = document.getElementById('postScore');
+const deltaScoreEl = document.getElementById('deltaScore');
+const qualityText = document.getElementById('qualityText');
+
+/* Game elements */
+const board = document.getElementById('board');
+const newGame = document.getElementById('newGame');
+const bestGameEl = document.getElementById('bestGame');
+
+/* Utilities: localStorage */
+function saveUser(name){
+  localStorage.setItem(APP.userKey, JSON.stringify({name, ts:Date.now()}));
+}
+function loadUser(){
+  const raw = localStorage.getItem(APP.userKey);
+  if(!raw) return null;
+  try{ return JSON.parse(raw); } catch(e){ return null; }
+}
+function savePreScore(n){
+  localStorage.setItem(APP.preKey, String(n));
+}
+function savePostScore(n){
+  localStorage.setItem(APP.postKey, String(n));
+}
+function loadPreScore(){ return Number(localStorage.getItem(APP.preKey) || -1); }
+function loadPostScore(){ return Number(localStorage.getItem(APP.postKey) || -1); }
+function clearAll(){
+  localStorage.removeItem(APP.userKey);
+  localStorage.removeItem(APP.preKey);
+  localStorage.removeItem(APP.postKey);
+  localStorage.removeItem(APP.bestGameKey);
+}
+
+/* Login logic */
+function showLoggedIn(name){
+  loginCard.style.display='none';
+  userPanel.style.display='block';
+  userNameEl.textContent = name;
+  greeting.textContent = `สวัสดี, ${name}`;
+  // avatar from initial
+  const initials = name.trim().split(/\s+/).map(s=>s[0]).slice(0,2).join('');
+  avatarEmoji.textContent = '🧑‍🎓';
+  // Show nav pretest only initially
+  navPre.disabled = false;
+  navContent.disabled = true;
+  navPost.disabled = true;
+  navGame.disabled = true;
+  navCheck.disabled = true;
+  // open pretest
+  showSection('pre');
+}
+
+function showSection(key){
+  Object.values(sections).forEach(s => s.classList.remove('active'));
+  if(sections[key]) sections[key].classList.add('active');
+}
+
+/* Initialize pretest */
+function renderPreQuestion(){
+  const i = preState.idx;
+  const q = preQuestions[i];
+  qtitle.textContent = `คำถาม`;
+  qcount.textContent = `ข้อที่ ${i+1} / ${preQuestions.length}`;
+  qtext.textContent = q.q;
+  // render options in fixed order
+  options.innerHTML = '';
+  q.choices.forEach((c,ci)=>{
+    const div = document.createElement('label');
+    div.className = 'option';
+    div.innerHTML = `<input type="radio" name="opt" value="${ci}"><span>${c}</span>`;
+    div.addEventListener('click', ()=>{
+      Array.from(options.querySelectorAll('.option')).forEach(o=>o.classList.remove('selected'));
+      div.classList.add('selected');
+      nextQ.disabled = false;
+      // store temporarily
+      preState.selected = ci;
+    });
+    options.appendChild(div);
+  });
+  nextQ.disabled = true;
+  preState.timeLeft = 20;
+  updateTimerDisplay(preState.timeLeft,prog);
+  if(preState.timer) clearInterval(preState.timer);
+  preState.timer = setInterval(() => {
+    preState.timeLeft--;
+    updateTimerDisplay(preState.timeLeft,prog);
+    if(preState.timeLeft<=0){
+      clearInterval(preState.timer);
+      // mark as no answer (null) and move next
+      preState.answers.push(null);
+      advancePreQuestion();
+    }
+  },1000);
+}
+
+function updateTimerDisplay(t, progEl){
+  const pct = Math.max(0, (t/20)*100);
+  if(progEl) progEl.style.width = pct + '%';
+  if(progEl===prog) timeLeftEl.textContent = t;
+  if(progEl===prog2) timeLeftEl2.textContent = t;
+}
+
+/* Advance pretest */
+function advancePreQuestion(){
+  if(preState.timer) { clearInterval(preState.timer); preState.timer=null; }
+  // save selected or null
+  if(typeof preState.selected !== 'undefined'){
+    preState.answers.push(Number(preState.selected));
+    preState.selected = undefined;
+  }
+  preState.idx++;
+  if(preState.idx < preQuestions.length){
+    renderPreQuestion();
+  } else {
+    finishPretest();
+  }
+}
+
+/* Finish pretest */
+function finishPretest(){
+  // score
+  let score=0;
+  for(let i=0;i<preQuestions.length;i++){
+    if(preState.answers[i] === preQuestions[i].ans) score++;
+  }
+  preState.scoring = score;
+  savePreScore(score);
+  alert(`จบบทแบบทดสอบก่อนเรียน! คะแนน: ${score} / ${preQuestions.length}`);
+  // unlock other sections
+  navContent.disabled = false;
+  navPost.disabled = false;
+  navGame.disabled = false;
+  navCheck.disabled = false;
+  // show check page update
+  updateCheckResults();
+  // switch to content automatically
+  showSection('content');
+}
+
+/* Posttest rendering with shuffled choices per question */
+let postQuestions = [];
+function preparePostQuestions(){
+  postQuestions = postQuestionsBase.map(q=>{
+    // create choice objects and record correct value index after shuffle
+    const choices = q.choices.map((c,idx)=>({text:c,orig:idx}));
+    const shuffled = shuffle(choices);
+    const newAns = shuffled.findIndex(s=>s.orig===q.ans);
+    return { q: q.q, choices: shuffled.map(s=>s.text), ans: newAns };
+  });
+}
+
+/* Render post question */
+function renderPostQuestion(){
+  const i = postState.idx;
+  const q = postQuestions[i];
+  qtitle2.textContent = `คำถาม`;
+  qcount2.textContent = `ข้อที่ ${i+1} / ${postQuestions.length}`;
+  qtext2.textContent = q.q;
+  options2.innerHTML = '';
+  q.choices.forEach((c,ci)=>{
+    const div = document.createElement('label');
+    div.className = 'option';
+    div.innerHTML = `<input type="radio" name="opt2" value="${ci}"><span>${c}</span>`;
+    div.addEventListener('click', ()=>{
+      Array.from(options2.querySelectorAll('.option')).forEach(o=>o.classList.remove('selected'));
+      div.classList.add('selected');
+      nextQ2.disabled = false;
+      postState.selected = ci;
+    });
+    options2.appendChild(div);
+  });
+  nextQ2.disabled = true;
+  postState.timeLeft = 20;
+  updateTimerDisplay(postState.timeLeft,prog2);
+  if(postState.timer) clearInterval(postState.timer);
+  postState.timer = setInterval(()=>{
+    postState.timeLeft--;
+    updateTimerDisplay(postState.timeLeft,prog2);
+    if(postState.timeLeft<=0){
+      clearInterval(postState.timer);
+      postState.answers.push(null);
+      advancePostQuestion();
+    }
+  },1000);
+}
+
+function advancePostQuestion(){
+  if(postState.timer){ clearInterval(postState.timer); postState.timer=null; }
+  if(typeof postState.selected !== 'undefined'){
+    postState.answers.push(Number(postState.selected));
+    postState.selected = undefined;
+  }
+  postState.idx++;
+  if(postState.idx < postQuestions.length){
+    renderPostQuestion();
+  } else {
+    finishPosttest();
+  }
+}
+
+function finishPosttest(){
+  // score
+  let score=0;
+  for(let i=0;i<postQuestions.length;i++){
+    if(postState.answers[i] === postQuestions[i].ans) score++;
+  }
+  postState.scoring = score;
+  savePostScore(score);
+  alert(`จบบทแบบทดสอบหลังเรียน! คะแนน: ${score} / ${postQuestions.length}`);
+  updateCheckResults();
+  showSection('check');
+}
+
+/* Update check page */
+function updateCheckResults(){
+  const pre = loadPreScore();
+  const post = loadPostScore();
+  preScoreEl.textContent = (pre>=0? `${pre} / 10` : '- / 10');
+  postScoreEl.textContent = (post>=0? `${post} / 10` : '- / 10');
+  if(pre>=0 && post>=0){
+    const delta = post - pre;
+    deltaScoreEl.textContent = (delta>=0? `+${delta}` : `${delta}`);
+    // quality based on post score
+    let quality = '', color='';
+    if(post >= 8){ quality = 'ยอดเยี่ยม — เข้าใจดีมาก'; color='#2b8a3e'; }
+    else if(post >=6){ quality = 'ดี — มีความเข้าใจที่ดี'; color='#2b8a3e'; }
+    else if(post >=4){ quality = 'ปานกลาง — ยังต้องฝึกเพิ่มเติม'; color='#b07f00'; }
+    else { quality = 'ควรปรับปรุง — แนะนำทบทวนเนื้อหา'; color='#a12b2b'; }
+    qualityText.innerHTML = `<strong style="color:${color}">${quality}</strong><div style="margin-top:6px">คะแนนก่อน: ${pre} | หลัง: ${post}</div>`;
+  } else {
+    deltaScoreEl.textContent = '-';
+    qualityText.textContent = 'ยังไม่มีข้อมูลครบทั้งก่อนและหลังการเรียน';
+  }
+}
+
+/* Game: memory matching using pairs of term & emoji */
+const gamePairs = [
+  {id:'model', text:'Model', emoji:'🧠'},
+  {id:'data', text:'Data', emoji:'📊'},
+  {id:'bot', text:'Chatbot', emoji:'💬'},
+  {id:'rec', text:'Recommendation', emoji:'⭐'},
+  {id:'auto', text:'Automation', emoji:'⚙️'},
+  {id:'secure', text:'Security', emoji:'🔐'},
+  {id:'forecast', text:'Forecast', emoji:'🔮'},
+  {id:'nlp', text:'NLP', emoji:'📝'},
+];
+
+let gameState = {cards:[], first:null, second:null, blocked:false, matched:0, score:0};
+
+function buildGameCards(){
+  const base = [];
+  gamePairs.forEach(p=>{
+    base.push({key:p.id, content:p.emoji, type:'emoji'});
+    base.push({key:p.id, content:p.text, type:'text'});
+  });
+  return shuffle(base);
+}
+
+function renderBoard(){
+  board.innerHTML = '';
+  gameState.cards.forEach((c,idx)=>{
+    const el = document.createElement('div');
+    el.className = 'card-game';
+    el.dataset.idx = idx;
+    el.setAttribute('role','button');
+    el.setAttribute('tabindex','0');
+    el.innerHTML = `<div class="face">${c.revealed || c.matched ? c.content : '❓'}</div>`;
+    if(c.matched) el.classList.add('matched');
+    el.addEventListener('click', ()=>onCardClick(idx));
+    el.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') onCardClick(idx); });
+    board.appendChild(el);
+  });
+}
+
+function startNewGame(){
+  gameState.cards = buildGameCards().map(c=>({...c, matched:false, revealed:false}));
+  gameState.first = null; gameState.second = null; gameState.blocked=false; gameState.matched=0; gameState.score=0;
+  renderBoard();
+}
+
+function onCardClick(idx){
+  if(gameState.blocked) return;
+  const card = gameState.cards[idx];
+  if(card.matched || card.revealed) return;
+  // reveal
+  card.revealed = true;
+  renderBoard();
+  if(!gameState.first){
+    gameState.first = {idx, card};
+  } else if(!gameState.second && idx !== gameState.first.idx){
+    gameState.second = {idx, card};
+    // check match
+    if(gameState.first.card.key === gameState.second.card.key){
+      // match
+      gameState.cards[gameState.first.idx].matched = true;
+      gameState.cards[gameState.second.idx].matched = true;
+      gameState.matched += 1;
+      gameState.score += 10;
+      gameState.first = null; gameState.second = null;
+      renderBoard();
+      if(gameState.matched === gamePairs.length){
+        // game over
+        const best = Number(localStorage.getItem(APP.bestGameKey) || 0);
+        if(gameState.score > best){
+          localStorage.setItem(APP.bestGameKey, String(gameState.score));
+          bestGameEl.textContent = String(gameState.score);
+        }
+        setTimeout(()=>{ alert(`ชนะ! คะแนน: ${gameState.score}`); },400);
+      }
+    } else {
+      // not match: hide after short delay
+      gameState.blocked = true;
+      setTimeout(()=>{
+        gameState.cards[gameState.first.idx].revealed = false;
+        gameState.cards[gameState.second.idx].revealed = false;
+        gameState.first = null; gameState.second = null; gameState.blocked=false;
+        renderBoard();
+      },800);
+    }
+  }
+}
+
+/* Event bindings */
+enterBtn.addEventListener('click', ()=>{
+  const name = fullnameInput.value.trim();
+  if(!name){ alert('กรุณากรอกชื่อ–นามสกุล'); return; }
+  saveUser(name);
+  showLoggedIn(name);
+});
+guestBtn.addEventListener('click', ()=>{
+  const name = 'ผู้เยี่ยมชม';
+  saveUser(name);
+  showLoggedIn(name);
+});
+
+logoutBtn.addEventListener('click', ()=>{
+  if(!confirm('ออกจากระบบและล้างข้อมูลคะแนนทั้งหมดหรือไม่?')) return;
+  clearAll();
+  location.reload();
+});
+
+/* Nav clicks */
+navPre.addEventListener('click', ()=> showSection('pre'));
+navContent.addEventListener('click', ()=> showSection('content'));
+navPost.addEventListener('click', ()=> {
+  preparePostQuestions();
+  postState = { idx:0, answers: [], timer:null, timeLeft:20, scoring:0 };
+  renderPostQuestion();
+  showSection('post');
+});
+navGame.addEventListener('click', ()=> showSection('game'));
+navCheck.addEventListener('click', ()=> { updateCheckResults(); showSection('check'); });
+
+/* Pretest next */
+nextQ.addEventListener('click', ()=>{
+  // if selected, push and advance
+  if(typeof preState.selected !== 'undefined'){
+    advancePreQuestion();
+  }
+});
+
+/* Posttest next */
+nextQ2.addEventListener('click', ()=>{
+  if(typeof postState.selected !== 'undefined'){
+    advancePostQuestion();
+  }
+});
+
+/* Initialize app state on load */
+function init(){
+  const user = loadUser();
+  if(user){
+    showLoggedIn(user.name || 'นักเรียน');
+  } else {
+    loginCard.style.display='block';
+    userPanel.style.display='none';
+  }
+  // prepare pretest
+  preState = { idx:0, answers: [], timer:null, timeLeft:20, scoring:0, selected:undefined };
+  renderPreQuestion();
+
+  // bind pre answer selection press Enter support
+  document.addEventListener('keydown', (e)=> {
+    if(e.key === 'Enter'){
+      // if in pretest and a selection present and next enabled, click
+      if(sections.pre.classList.contains('active') && !nextQ.disabled) nextQ.click();
+      if(sections.post.classList.contains('active') && !nextQ2.disabled) nextQ2.click();
+    }
+  });
+
+  // init game
+  const best = Number(localStorage.getItem(APP.bestGameKey) || 0);
+  bestGameEl.textContent = String(best);
+  startNewGame();
+}
+
+/* Game controls */
+newGame.addEventListener('click', ()=>{
+  startNewGame();
+});
+
+/* On page load */
+init();
+
+/* Accessibility: disable content nav until pretest finished */
+/* The unlocking occurs after finishPretest called earlier */
+
+/* Small helper: ensure sheen does not overlap buttons visually - it's on cards only */
+</script>
+</body>
+</html>
